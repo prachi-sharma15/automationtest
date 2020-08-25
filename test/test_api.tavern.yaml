@@ -1,0 +1,161 @@
+---
+test_name: ADD
+
+marks:
+    - test
+
+stages:
+
+    -   name: ADD ONE  Hero
+
+        request:
+            url: "http://localhost:3000/fight/addHero"
+            method: POST
+            json:
+                heroId: "CAM"
+
+            headers:
+                Authorization: "Bearer pag4nt1stoken"
+
+        response:
+            status_code: 200
+            verify_response_with:
+                -   function: testing_utils:check_jsonpath_value
+                    extra_kwargs:
+                        json_path_value: {
+                            "message": "Yippie! Captain America added. At the moment 1 heroe waiting to fight."
+                        }
+---
+test_name: Fight
+
+marks:
+    - test
+
+stages:
+
+    -   name: Fight [Lesss then 2 heroes]
+
+        request:
+            url: "http://localhost:3000/fight"
+            method: POST
+
+            headers:
+                Authorization: "Bearer pag4nt1stoken"
+
+        response:
+            status_code: 400
+            verify_response_with:
+                -   function: testing_utils:check_jsonpath_value
+                    extra_kwargs:
+                        json_path_value: {
+                            "errorCode": "1001",
+                            "message": "You can not start a fight with less than 2 heroes"
+                        }
+---
+test_name: ADD
+
+marks:
+    - test
+
+stages:
+
+    -   name: ADD ONE more Hero
+
+        request:
+            url: "http://localhost:3000/fight/addHero"
+            method: POST
+            json:
+                heroId: "HLK"
+
+            headers:
+                Authorization: "Bearer pag4nt1stoken"
+
+        response:
+            status_code: 200
+            verify_response_with:
+                -   function: testing_utils:check_jsonpath_value
+                    extra_kwargs:
+                        json_path_value: {
+                            "message": "Yippie! Hulk added. At the moment 2 heroes waiting to fight."
+                        }
+---
+test_name: Fight
+
+marks:
+    - test
+
+stages:
+
+    -   name: Fight
+
+        request:
+            url: "http://localhost:3000/fight"
+            method: POST
+
+            headers:
+                Authorization: "Bearer pag4nt1stoken"
+
+        response:
+            status_code: 200
+            verify_response_with:
+                -   function: testing_utils:check_jsonpath_value
+                    extra_kwargs:
+                        json_path_value: {
+                            "message": "Heroes fought hard! The winner is Captain America!"
+                       }
+---
+test_name: ADD
+
+marks:
+    - test
+
+stages:
+
+    -   name: ADD 2 Heroes
+
+        request:
+            url: "http://localhost:3000/fight/addHero"
+            method: POST
+            json:
+                heroId: "CAM"
+                heroId: "HLK"
+
+            headers:
+                Authorization: "Bearer pag4nt1stoken"
+
+        response:
+            status_code: 400
+            verify_response_with:
+                -   function: testing_utils:check_jsonpath_value
+                    extra_kwargs:
+                        json_path_value: {
+                            "errorCode": "1001"
+                        }
+---
+test_name: ADD
+
+marks:
+    - test
+
+stages:
+
+    -   name: Hero Not present in the list
+
+        request:
+            url: "http://localhost:3000/fight/addHero"
+            method: POST
+            json:
+                heroId: "ABC"
+
+            headers:
+                Authorization: "Bearer pag4nt1stoken"
+
+        response:
+            status_code: 400
+            verify_response_with:
+                -   function: testing_utils:check_jsonpath_value
+                    extra_kwargs:
+                        json_path_value: {
+                            "errorCode": "1001",
+                            "message": "There is no hero with the id [ABC]"
+                        }
